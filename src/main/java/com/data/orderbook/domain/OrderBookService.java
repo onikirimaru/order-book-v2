@@ -5,7 +5,5 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderBookService {
 
-    public void update() {
-
-    }
+    public void update() {}
 }

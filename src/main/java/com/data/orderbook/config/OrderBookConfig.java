@@ -7,13 +7,10 @@ import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -49,9 +46,8 @@ public class OrderBookConfig {
     }
 
     @Bean
-    public WebSocketSession stompSession(StandardWebSocketClient client,
-                                         OrderBookHandler handler,
-                                         StompSessionHandler sessionHandler) {
+    public WebSocketSession stompSession(
+            StandardWebSocketClient client, OrderBookHandler handler, StompSessionHandler sessionHandler) {
         return client.execute(handler, wssURI).join();
     }
 
@@ -92,8 +88,7 @@ public class OrderBookConfig {
         }
 
         @Override
-        public void setAsyncSendTimeout(long timeout) {
-        }
+        public void setAsyncSendTimeout(long timeout) {}
 
         @Override
         public Session connectToServer(Object endpoint, URI path) throws DeploymentException, IOException {
@@ -125,8 +120,7 @@ public class OrderBookConfig {
         }
 
         @Override
-        public void setDefaultMaxSessionIdleTimeout(long timeout) {
-        }
+        public void setDefaultMaxSessionIdleTimeout(long timeout) {}
 
         @Override
         public int getDefaultMaxBinaryMessageBufferSize() {
@@ -134,8 +128,7 @@ public class OrderBookConfig {
         }
 
         @Override
-        public void setDefaultMaxBinaryMessageBufferSize(int max) {
-        }
+        public void setDefaultMaxBinaryMessageBufferSize(int max) {}
 
         @Override
         public int getDefaultMaxTextMessageBufferSize() {
@@ -143,8 +136,7 @@ public class OrderBookConfig {
         }
 
         @Override
-        public void setDefaultMaxTextMessageBufferSize(int max) {
-        }
+        public void setDefaultMaxTextMessageBufferSize(int max) {}
 
         @Override
         public Set<Extension> getInstalledExtensions() {
