@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.diffplug.spotless' version '7.0.0.BETA2'
+    id 'com.google.cloud.tools.jib' version '3.4.2'
 }
 
 group = 'com.data.'
@@ -53,5 +54,11 @@ tasks.named('test') {
 spotless {
     java {
         palantirJavaFormat()
+    }
+}
+
+jib {
+    to {
+        image = 'example/order-book'
     }
 }
