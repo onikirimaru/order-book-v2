@@ -1,3 +1,6 @@
+order-book:
+  wssURI: "wss://ws.kraken.com/"
+
 spring:
   main:
     web-application-type: none
