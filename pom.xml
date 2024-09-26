@@ -32,7 +32,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<lombok.version>1.18.34</lombok.version>
-
+		<palantir-format.version>2.47.0</palantir-format.version>
 		<spotless-plugin.version>2.43.0</spotless-plugin.version>
 	</properties>
 	<dependencies>

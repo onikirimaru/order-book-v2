@@ -53,13 +53,12 @@ public class OrderBookConfig {
         public void setAsyncSendTimeout(long timeout) {}
 
         @Override
-        public Session connectToServer(Object endpoint, URI path) throws DeploymentException, IOException {
+        public Session connectToServer(Object endpoint, URI path) {
             return null;
         }
 
         @Override
-        public Session connectToServer(Class<?> annotatedEndpointClass, URI path)
-                throws DeploymentException, IOException {
+        public Session connectToServer(Class<?> annotatedEndpointClass, URI path) {
             return null;
         }
 

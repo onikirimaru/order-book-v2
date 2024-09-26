@@ -14,11 +14,8 @@ public class OrderBookHandler implements WebSocketHandler {
 
         Flux<WebSocketMessage> output = session.receive()
                 .doOnNext(System.out::println)
-                .concatMap(message -> {
-                    return Flux.fromIterable(List.of(message));
-                })
+                .concatMap(message -> Flux.fromIterable(List.of(message)))
                 .map(value -> session.textMessage("Echo " + value));
-
         return session.send(output);
     }
 }

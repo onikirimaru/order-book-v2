@@ -70,7 +70,7 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
 
     private <T> Try<T> deserialise(TextMessage message) {
         return Try.of(() ->
-                objectMapper.readValue(message.getPayload().getBytes(StandardCharsets.UTF_8), new TypeReference<T>() {
+                objectMapper.readValue(message.getPayload().getBytes(StandardCharsets.UTF_8), new TypeReference<>() {
                 }));
     }
 
