@@ -46,19 +46,20 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
                 log.info("Subscription message: '{}'", new String(subscriptionMessage.get()));
                 //FIXME Handle the error an terminate the application
                 Try.run(() -> session.sendMessage(new TextMessage(subscriptionMessage.get())));
-                status = Status.SUBSCRIBED;
+                status = Status.SUBSCRIPTION_NOT_CONFIRMED;
             }
             case SUBSCRIPTION_NOT_CONFIRMED -> {
                 log.info("Subscribed to '{}'", message.getPayload());
                 status = Status.SUBSCRIBED;
             }
             case SUBSCRIBED -> {
-                log.debug("Update received: '{}'", message.getPayload());
+                log.info("Update received: '{}'", message.getPayload());
                 if (message.getPayload().equals(EVENT_HEARTBEAT)) {
                     //Heart beat received
                     return;
                 }
-                final var subscriptionMessage = this.<List<String>>deserialise(message);
+                final var updateMessage = this.<List<String>>deserialise(message);
+//                log.debug("Subscription message: '{}'", subscriptionMessage.get());
             }
             default -> log.warn("Status '{} not handled'", status);
         }

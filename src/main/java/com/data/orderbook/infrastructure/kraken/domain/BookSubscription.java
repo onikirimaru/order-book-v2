@@ -1,9 +1,20 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.servlet.annotation.HandlesTypes;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import java.util.Objects;
 
+@Getter(onMethod = @__(@JsonProperty))
+@Accessors(fluent = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class BookSubscription extends Subscription {
 
     private final Depth depth;
@@ -13,30 +24,4 @@ public class BookSubscription extends Subscription {
         this.depth = depth;
     }
 
-    @JsonGetter
-    public Depth depth() {
-        return depth;
-    }
-
-    @Override
-    public String toString() {
-        return "BookSubscription{" +
-                "depth=" + depth + ", " +
-                "name=" + this.name() +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        BookSubscription that = (BookSubscription) o;
-        return depth == that.depth;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), depth);
-    }
 }
