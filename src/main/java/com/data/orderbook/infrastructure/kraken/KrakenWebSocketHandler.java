@@ -20,13 +20,14 @@ import java.util.List;
 @Service
 public class KrakenWebSocketHandler extends TextWebSocketHandler {
 
+    public static final String EVENT_HEARTBEAT = "{\"event\":\"heartbeat\"}";
     private final ObjectMapper objectMapper;
     private final List<String> pairs;
 
     private Status status = Status.STARTING;
 
     public KrakenWebSocketHandler(
-            @Value("order-book.pairs") List<String> pairs,
+            @Value("#{'${order-book.pairs}'.split(',')}") List<String> pairs,
             ObjectMapper objectMapper,
             BaseOrderBookService orderBookService
     ) {
@@ -41,8 +42,6 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
                 final var startEvent = this.<StartEvent>deserialise(message);
                 log.info("Connection started: {}", startEvent.get());
                 status = Status.ONLINE;
-            }
-            case ONLINE -> {
                 final var subscriptionMessage = serialize(SubscriptionEvent.book(pairs, 1));
                 log.info("Subscription message: '{}'", new String(subscriptionMessage.get()));
                 //FIXME Handle the error an terminate the application
@@ -54,8 +53,12 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
                 status = Status.SUBSCRIBED;
             }
             case SUBSCRIBED -> {
-                log.info("Subscribed to '{}'", message.getPayload());
-//                final var subscriptionMessage = this.<List<String>>deserialise(message);
+                log.debug("Update received: '{}'", message.getPayload());
+                if (message.getPayload().equals(EVENT_HEARTBEAT)) {
+                    //Heart beat received
+                    return;
+                }
+                final var subscriptionMessage = this.<List<String>>deserialise(message);
             }
             default -> log.warn("Status '{} not handled'", status);
         }
