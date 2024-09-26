@@ -1,27 +1,23 @@
 package com.data.orderbook.config;
 
-import com.data.orderbook.infrastructure.kraken.OrderBookHandler;
+import com.data.orderbook.infrastructure.kraken.KrakenWebSocketHandler;
 import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Set;
 
 @Slf4j
 @Configuration
@@ -41,43 +37,9 @@ public class OrderBookConfig {
     }
 
     @Bean
-    public StompSessionHandler sessionHandler() {
-        return new MyStompSessionHandler();
-    }
-
-    @Bean
     public WebSocketSession stompSession(
-            StandardWebSocketClient client, OrderBookHandler handler, StompSessionHandler sessionHandler) {
+            StandardWebSocketClient client, KrakenWebSocketHandler handler) {
         return client.execute(handler, wssURI).join();
-    }
-
-    private static class MyStompSessionHandler implements StompSessionHandler {
-        @Override
-        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-            log.info("Connected");
-        }
-
-        @Override
-        public void handleException(
-                StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-            log.info("Exception");
-        }
-
-        @Override
-        public void handleTransportError(StompSession session, Throwable exception) {
-            log.info("Transport");
-        }
-
-        @Override
-        public Type getPayloadType(StompHeaders headers) {
-            log.info("Payload");
-            return null;
-        }
-
-        @Override
-        public void handleFrame(StompHeaders headers, Object payload) {
-            log.info("Frame");
-        }
     }
 
     private static class MyWebSocketContainer implements WebSocketContainer {
