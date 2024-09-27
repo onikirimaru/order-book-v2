@@ -1,4 +1,4 @@
-package com.data.orderbook.domain;
+package com.data.orderbook.domain.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;

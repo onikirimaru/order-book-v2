@@ -2,7 +2,8 @@ package com.data.orderbook.infrastructure.kraken.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.data.orderbook.domain.PriceLevel;
+import com.data.orderbook.domain.model.PriceLevel;
+import com.data.orderbook.infrastructure.kraken.domain.mapper.UpdateMessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.Instant;

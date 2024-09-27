@@ -1,6 +1,7 @@
 order-book:
   wssURI: "wss://ws.kraken.com/"
   pairs: "BTC/USD"
+  output: "console"
 
 spring:
   main:

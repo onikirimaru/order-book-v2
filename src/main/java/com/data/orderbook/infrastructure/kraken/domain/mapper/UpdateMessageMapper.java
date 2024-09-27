@@ -1,6 +1,7 @@
-package com.data.orderbook.infrastructure.kraken.domain;
+package com.data.orderbook.infrastructure.kraken.domain.mapper;
 
-import com.data.orderbook.domain.OrderBookUpdate;
+import com.data.orderbook.domain.model.OrderBookUpdate;
+import com.data.orderbook.infrastructure.kraken.domain.MessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;

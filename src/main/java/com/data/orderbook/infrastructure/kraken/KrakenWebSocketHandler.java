@@ -2,10 +2,10 @@ package com.data.orderbook.infrastructure.kraken;
 
 import com.data.orderbook.domain.ports.in.OrderBookService;
 import com.data.orderbook.infrastructure.kraken.domain.MessageMapper;
-import com.data.orderbook.infrastructure.kraken.domain.SnapshotMessageMapper;
+import com.data.orderbook.infrastructure.kraken.domain.mapper.SnapshotMessageMapper;
 import com.data.orderbook.infrastructure.kraken.domain.StartEvent;
 import com.data.orderbook.infrastructure.kraken.domain.SubscriptionEvent;
-import com.data.orderbook.infrastructure.kraken.domain.UpdateMessageMapper;
+import com.data.orderbook.infrastructure.kraken.domain.mapper.UpdateMessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Try;
 import java.util.List;

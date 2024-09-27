@@ -1,5 +1,6 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
+import com.data.orderbook.infrastructure.kraken.domain.mapper.SnapshotMessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;

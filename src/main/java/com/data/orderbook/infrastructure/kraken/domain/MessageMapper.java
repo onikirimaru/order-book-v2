@@ -1,6 +1,6 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
-import com.data.orderbook.domain.PriceLevel;
+import com.data.orderbook.domain.model.PriceLevel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Try;
