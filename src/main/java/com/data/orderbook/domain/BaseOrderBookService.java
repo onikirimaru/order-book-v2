@@ -1,6 +1,7 @@
 package com.data.orderbook.domain;
 
 import com.data.orderbook.domain.ports.in.OrderBookService;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,10 @@ public class BaseOrderBookService implements OrderBookService {
     @Override
     public void ingest(OrderBookUpdate update) {}
 
-    public List<OrderBookCandle> candles() {
+    @Override
+    public void ingest(OrderBookSnapshot snapshot) {}
+
+    public List<OrderBookCandle> candles(Instant minute) {
         // Span a thread to perform
         return List.of();
     }

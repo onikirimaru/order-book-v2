@@ -21,7 +21,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class KrakenWebSocketHandler extends TextWebSocketHandler {
 
     public static final String EVENT_HEARTBEAT = "{\"event\":\"heartbeat\"}";
-    private final ObjectMapper objectMapper;
     private final List<String> pairs;
     private final UpdateMessageMapper updateMessageMapper;
     private final SnapshotMessageMapper snapshotMessageMapper;
@@ -37,7 +36,6 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
             MessageMapper messageMapper,
             UpdateMessageMapper updateMessageMapper,
             OrderBookService orderBookService) {
-        this.objectMapper = objectMapper;
         this.pairs = pairs;
         this.updateMessageMapper = updateMessageMapper;
         this.snapshotMessageMapper = snapshotMessageMapper;
@@ -71,6 +69,7 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
     private void handlingSnapshot(WebSocketSession session, TextMessage message) {
         log.info("Snapshot received: '{}'", message.getPayload());
         final var map = snapshotMessageMapper.map(message);
+        orderBookService.ingest(map);
         status = Status.PROCESSING;
     }
 

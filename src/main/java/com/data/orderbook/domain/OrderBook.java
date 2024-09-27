@@ -1,13 +1,13 @@
 package com.data.orderbook.domain;
 
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class OrderBook {
 
     private final String pair;
-    private final Map<String, List<Ticks>> ticks = new HashMap<>();
+    private final ConcurrentHashMap<Instant, List<Ticks>> ticks = new ConcurrentHashMap<>();
 }

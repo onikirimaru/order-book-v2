@@ -34,7 +34,7 @@ public class MessageMapper {
     }
 
     public List<PriceLevel> map(List<List<String>> prices) {
-        //FIXME Handl republish events
+        // FIXME Handl republish events
         return prices.stream()
                 .map(ple -> {
                     var split = ple.get(2).split("\\.");

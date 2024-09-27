@@ -2,12 +2,10 @@ package com.data.orderbook.config;
 
 import com.data.orderbook.infrastructure.kraken.KrakenWebSocketHandler;
 import jakarta.websocket.ClientEndpointConfig;
-import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,8 @@ public class OrderBookConfig {
 
     @Bean
     public StandardWebSocketClient client() {
-        final var container = new MyWebSocketContainer();
+        // FIXME Pending to handle client configuration using container
+        final var container = new KrakenSocketContainer();
         return new StandardWebSocketClient();
     }
 
@@ -40,7 +39,7 @@ public class OrderBookConfig {
         return client.execute(handler, wssURI).join();
     }
 
-    private static class MyWebSocketContainer implements WebSocketContainer {
+    private static class KrakenSocketContainer implements WebSocketContainer {
 
         @Override
         public long getDefaultAsyncSendTimeout() {
@@ -61,15 +60,13 @@ public class OrderBookConfig {
         }
 
         @Override
-        public Session connectToServer(Endpoint endpoint, ClientEndpointConfig clientEndpointConfiguration, URI path)
-                throws DeploymentException, IOException {
+        public Session connectToServer(Endpoint endpoint, ClientEndpointConfig clientEndpointConfiguration, URI path) {
             return null;
         }
 
         @Override
         public Session connectToServer(
-                Class<? extends Endpoint> endpoint, ClientEndpointConfig clientEndpointConfiguration, URI path)
-                throws DeploymentException, IOException {
+                Class<? extends Endpoint> endpoint, ClientEndpointConfig clientEndpointConfiguration, URI path) {
             return null;
         }
 
