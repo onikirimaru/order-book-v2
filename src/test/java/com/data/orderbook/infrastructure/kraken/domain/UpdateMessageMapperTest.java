@@ -7,7 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.socket.TextMessage;
 
 class UpdateMessageMapperTest {
@@ -32,5 +36,18 @@ class UpdateMessageMapperTest {
                                     new BigDecimal("0.64859742"),
                                     Instant.ofEpochSecond(1727348278L, 626592000))));
         });
+    }
+
+    @ParameterizedTest
+    @MethodSource("testValues")
+    public void shouldMapAll(TextMessage message) {
+        mapper.map(message);
+    }
+
+    public static Stream<Arguments> testValues() {
+        return Stream.of(
+                Arguments.of(
+                        new TextMessage(
+                                "[119930880,{\"a\":[[\"65530.00000\",\"4.35120597\",\"1727422308.989452\"]]},{\"b\":[[\"65529.90000\",\"3.00457718\",\"1727422308.989452\"]],\"c\":\"3297255708\"},\"book-10\",\"XBT/USD\"]")));
     }
 }

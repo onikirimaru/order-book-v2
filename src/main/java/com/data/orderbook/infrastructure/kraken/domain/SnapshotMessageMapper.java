@@ -22,8 +22,8 @@ public class SnapshotMessageMapper extends MessageMapper {
         final var contentMap = (Map<String, List<List<String>>>) deserialisedMessage.get(1);
         final var pair = (String) deserialisedMessage.get(3);
         final var name = (String) deserialisedMessage.get(2);
-        final var asks = map(contentMap.get("a"));
-        final var bids = map(contentMap.get("b"));
+        final var asks = map(contentMap.get("as"));
+        final var bids = map(contentMap.get("bs"));
         return new OrderBookSnapshot(pair, null, name, asks, bids);
     }
 }

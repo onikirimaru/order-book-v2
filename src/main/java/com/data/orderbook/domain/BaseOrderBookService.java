@@ -2,6 +2,7 @@ package com.data.orderbook.domain;
 
 import com.data.orderbook.domain.ports.in.OrderBookService;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BaseOrderBookService implements OrderBookService {
 
-    private Map<String, OrderBook> books;
+    private final Map<String, OrderBook> books;
 
-    public void update() {}
+    public BaseOrderBookService() {
+        this.books = new HashMap<>();
+    }
 
     @Override
     public void createBook(String pair) {
