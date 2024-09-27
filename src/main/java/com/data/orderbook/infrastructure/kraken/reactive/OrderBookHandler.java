@@ -1,4 +1,4 @@
-package com.data.orderbook.reactive;
+package com.data.orderbook.infrastructure.kraken.reactive;
 
 import java.util.List;
 import org.springframework.web.reactive.socket.WebSocketHandler;

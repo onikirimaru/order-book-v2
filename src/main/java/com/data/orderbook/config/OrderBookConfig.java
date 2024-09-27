@@ -7,6 +7,9 @@ import jakarta.websocket.Endpoint;
 import jakarta.websocket.Extension;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Set;
 
 @Slf4j
 @Configuration
@@ -37,8 +36,7 @@ public class OrderBookConfig {
     }
 
     @Bean
-    public WebSocketSession stompSession(
-            StandardWebSocketClient client, KrakenWebSocketHandler handler) {
+    public WebSocketSession stompSession(StandardWebSocketClient client, KrakenWebSocketHandler handler) {
         return client.execute(handler, wssURI).join();
     }
 

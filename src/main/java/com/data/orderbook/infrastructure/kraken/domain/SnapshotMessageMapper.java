@@ -1,6 +1,6 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
-import com.data.orderbook.domain.OrderBookUpdate;
+import com.data.orderbook.domain.OrderBookSnapshot;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -10,21 +10,20 @@ import org.springframework.web.socket.TextMessage;
 
 @Slf4j
 @Component
-public class UpdateMessageMapper extends MessageMapper {
+public class SnapshotMessageMapper extends MessageMapper {
 
-    public UpdateMessageMapper(ObjectMapper objectMapper) {
+    public SnapshotMessageMapper(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
-    public OrderBookUpdate map(TextMessage textMessage) {
+    public OrderBookSnapshot map(TextMessage textMessage) {
         final var deserialisedMessage =
                 this.<List<Object>>deserialise(textMessage).get();
         final var contentMap = (Map<String, List<List<String>>>) deserialisedMessage.get(1);
         final var pair = (String) deserialisedMessage.get(3);
         final var name = (String) deserialisedMessage.get(2);
-        final var asks = mapNullable(contentMap.get("a"));
-        final var bids = mapNullable(contentMap.get("b"));
-        // FIXME Need to map condition on last update
-        return new OrderBookUpdate(pair, null, name, asks, bids);
+        final var asks = map(contentMap.get("a"));
+        final var bids = map(contentMap.get("b"));
+        return new OrderBookSnapshot(pair, null, name, asks, bids);
     }
 }

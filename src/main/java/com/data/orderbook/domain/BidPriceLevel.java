@@ -1,3 +1,3 @@
 package com.data.orderbook.domain;
 
-public record Ticks() {}
+public class BidPriceLevel {}

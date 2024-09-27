@@ -1,4 +1,3 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
-public record UpdateEvent() {
-}
+public record UpdateEvent() {}

@@ -1,4 +1,6 @@
 package com.data.orderbook.domain;
 
-public record PriceLevel(String price, String volume, String timestamp) {
-}
+import java.math.BigDecimal;
+import java.time.Instant;
+
+public record PriceLevel(BigDecimal price, BigDecimal volume, Instant timestamp) {}

@@ -1,10 +1,9 @@
 package com.data.orderbook.domain;
 
-import com.data.orderbook.domain.ports.OrderBookService;
-import org.springframework.stereotype.Component;
-
+import com.data.orderbook.domain.ports.in.OrderBookService;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BaseOrderBookService implements OrderBookService {
@@ -15,10 +14,14 @@ public class BaseOrderBookService implements OrderBookService {
 
     @Override
     public void createBook(String pair) {
+        books.putIfAbsent(pair, new OrderBook(pair));
     }
 
+    @Override
+    public void ingest(OrderBookUpdate update) {}
+
     public List<OrderBookCandle> candles() {
-        //Span a thread to perform
+        // Span a thread to perform
         return List.of();
     }
 }
