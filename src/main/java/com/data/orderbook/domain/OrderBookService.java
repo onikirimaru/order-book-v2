@@ -1,5 +1,6 @@
 package com.data.orderbook.domain;
 
+import com.data.orderbook.domain.model.ClockProvider;
 import com.data.orderbook.domain.model.OrderBook;
 import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.model.OrderBookSnapshot;
@@ -10,24 +11,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderBookService implements OrderBookServicePort {
 
+    private final ClockProvider clockProvider;
+    private Instant instant;
+
     private final Map<String, OrderBook> books;
 
-    public OrderBookService() {
+    public OrderBookService(ClockProvider clockProvider) {
         this.books = new ConcurrentHashMap<>();
+        this.clockProvider = clockProvider;
     }
 
     @Override
     public void createBook(String pair) {
+        this.instant = Instant.now(clockProvider.clock());
         books.putIfAbsent(pair, new OrderBook(pair));
     }
 
     @Override
     public OrderBook ingest(OrderBookUpdate update) {
+        //Books should always exist
         return books.computeIfPresent(update.pair(), (k, v) -> v.ingest(update));
     }
 
@@ -35,7 +43,7 @@ public class OrderBookService implements OrderBookServicePort {
     public void ingest(OrderBookSnapshot snapshot) {}
 
     @Override
-    public Map<String, OrderBook> calculateCandle(Instant time) {
+    public Map<String, OrderBookCandle> calculateCandle(Instant time) {
         return Map.of();
     }
 

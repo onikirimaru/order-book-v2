@@ -30,6 +30,6 @@ public class CandleService {
         var now = Instant.now(clockProvider.clock());
         //We need a candle per pair
         log.info("'{}' Dump candle start", now.getEpochSecond());
-        orderBookService.calculateCandle(now).forEach((key, value) -> candlePublisher.publish(value));
+        orderBookService.calculateCandle(now).forEach(candlePublisher::publish);
     }
 }

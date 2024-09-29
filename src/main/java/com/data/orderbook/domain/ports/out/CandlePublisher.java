@@ -4,7 +4,5 @@ import com.data.orderbook.domain.model.OrderBookCandle;
 
 public interface CandlePublisher {
 
-    void publish(OrderBookCandle candles);
-
-    void publish(String key, OrderBookCandle value);
+    void publish(String pair, OrderBookCandle value);
 }
