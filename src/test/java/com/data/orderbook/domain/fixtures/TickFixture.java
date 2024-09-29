@@ -1,11 +1,7 @@
 package com.data.orderbook.domain.fixtures;
 
-import com.data.orderbook.domain.model.PriceLevel;
 import com.data.orderbook.domain.model.Tick;
-
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 
 public class TickFixture {
 

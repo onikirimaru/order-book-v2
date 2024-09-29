@@ -16,7 +16,7 @@ public class StartMessageMapper extends MessageMapper {
     }
 
     public StartEvent map(TextMessage textMessage) {
-        //FIXME TBD
+        // FIXME TBD
         return null;
     }
 }

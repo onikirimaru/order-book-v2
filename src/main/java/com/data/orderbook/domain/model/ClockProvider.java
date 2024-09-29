@@ -1,8 +1,7 @@
 package com.data.orderbook.domain.model;
 
-import org.springframework.stereotype.Component;
-
 import java.time.Clock;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ClockProvider {

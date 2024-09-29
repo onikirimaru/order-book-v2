@@ -1,15 +1,13 @@
 package com.data.orderbook.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.data.orderbook.domain.fixtures.OrderBookUpdateFixture;
 import com.data.orderbook.domain.fixtures.TickFixture;
 import com.data.orderbook.domain.model.ClockProviderMock;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.time.Instant;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class OrderBookServiceTest {
 
@@ -29,11 +27,10 @@ class OrderBookServiceTest {
         assertThat(result).satisfies(orderBook -> {
             assertThat(orderBook.lastUpdate()).isNull();
             assertThat(orderBook.ticks()).isEqualTo(Map.of());
-
         });
     }
 
-  @Test
+    @Test
     void shouldIngest() {
         orderBookService.createBook("PAIR/PAIR");
         var result = orderBookService.ingest(OrderBookUpdateFixture.create());

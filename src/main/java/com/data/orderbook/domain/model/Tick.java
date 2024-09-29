@@ -1,13 +1,10 @@
 package com.data.orderbook.domain.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @ToString
 @EqualsAndHashCode
@@ -30,4 +27,3 @@ public class Tick {
         return this;
     }
 }
-

@@ -4,7 +4,6 @@ import com.data.orderbook.domain.model.OrderBook;
 import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.model.OrderBookSnapshot;
 import com.data.orderbook.domain.model.OrderBookUpdate;
-
 import java.time.Instant;
 import java.util.Map;
 

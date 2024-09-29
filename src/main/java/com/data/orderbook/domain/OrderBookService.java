@@ -10,8 +10,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,7 +33,7 @@ public class OrderBookService implements OrderBookServicePort {
 
     @Override
     public OrderBook ingest(OrderBookUpdate update) {
-        //Books should always exist
+        // Books should always exist
         return books.computeIfPresent(update.pair(), (k, v) -> v.ingest(update));
     }
 
