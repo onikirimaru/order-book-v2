@@ -4,20 +4,21 @@ import com.data.orderbook.domain.model.OrderBook;
 import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.model.OrderBookSnapshot;
 import com.data.orderbook.domain.model.OrderBookUpdate;
-import com.data.orderbook.domain.ports.in.OrderBookService;
+import com.data.orderbook.domain.ports.in.OrderBookServicePort;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.stereotype.Component;
 
 @Component
-public class BaseOrderBookService implements OrderBookService {
+public class OrderBookService implements OrderBookServicePort {
 
     private final Map<String, OrderBook> books;
 
-    public BaseOrderBookService() {
-        this.books = new HashMap<>();
+    public OrderBookService() {
+        this.books = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -26,10 +27,17 @@ public class BaseOrderBookService implements OrderBookService {
     }
 
     @Override
-    public void ingest(OrderBookUpdate update) {}
+    public OrderBook ingest(OrderBookUpdate update) {
+        return books.computeIfPresent(update.pair(), (k, v) -> v.ingest(update));
+    }
 
     @Override
     public void ingest(OrderBookSnapshot snapshot) {}
+
+    @Override
+    public Map<String, OrderBook> calculateCandle(Instant time) {
+        return Map.of();
+    }
 
     public List<OrderBookCandle> candles(Instant minute) {
         // Span a thread to perform

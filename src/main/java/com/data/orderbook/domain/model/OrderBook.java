@@ -18,8 +18,13 @@ public class OrderBook {
     private final Instant instant = Instant.now();
     private final String pair;
     private final ConcurrentHashMap<Instant, List<Tick>> ticks = new ConcurrentHashMap<>();
+    private Instant lastUpdate;
 
     public OrderBook(String pair) {
         this.pair = pair;
+    }
+
+    public OrderBook ingest(OrderBookUpdate update) {
+        return this;
     }
 }

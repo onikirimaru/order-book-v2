@@ -1,6 +1,6 @@
 package com.data.orderbook.infrastructure.kraken;
 
-import com.data.orderbook.domain.ports.in.OrderBookService;
+import com.data.orderbook.domain.ports.in.OrderBookServicePort;
 import com.data.orderbook.infrastructure.kraken.domain.MessageMapper;
 import com.data.orderbook.infrastructure.kraken.domain.mapper.SnapshotMessageMapper;
 import com.data.orderbook.infrastructure.kraken.domain.StartEvent;
@@ -24,7 +24,7 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
     private final List<String> pairs;
     private final UpdateMessageMapper updateMessageMapper;
     private final SnapshotMessageMapper snapshotMessageMapper;
-    private final OrderBookService orderBookService;
+    private final OrderBookServicePort orderBookService;
     private final MessageMapper messageMapper;
 
     private Status status = Status.STARTING;
@@ -35,7 +35,7 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
             SnapshotMessageMapper snapshotMessageMapper,
             MessageMapper messageMapper,
             UpdateMessageMapper updateMessageMapper,
-            OrderBookService orderBookService) {
+            OrderBookServicePort orderBookService) {
         this.pairs = pairs;
         this.updateMessageMapper = updateMessageMapper;
         this.snapshotMessageMapper = snapshotMessageMapper;
