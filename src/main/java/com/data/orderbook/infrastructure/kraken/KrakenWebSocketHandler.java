@@ -57,7 +57,7 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleUpdateMessage(WebSocketSession session, TextMessage message) {
-        log.info("Update received: '{}'", message.getPayload());
+        log.debug("Update received: '{}'", message.getPayload());
         if (message.getPayload().equals(EVENT_HEARTBEAT)) {
             // Heart beat received
             log.debug("Heartbeat received");
