@@ -1,8 +1,10 @@
 package com.data.orderbook.domain;
 
 import com.data.orderbook.domain.model.ClockProvider;
+import com.data.orderbook.domain.model.OrderBookCandle;
+import com.data.orderbook.domain.model.Tick;
 import com.data.orderbook.domain.ports.in.OrderBookServicePort;
-import com.data.orderbook.domain.ports.out.CandlePublisher;
+import com.data.orderbook.domain.ports.out.CandlePublisherPort;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,11 +16,11 @@ public class CandleService {
 
     private final OrderBookServicePort orderBookService;
 
-    private final CandlePublisher candlePublisher;
+    private final CandlePublisherPort candlePublisher;
     private final ClockProvider clockProvider;
 
     public CandleService(
-            OrderBookServicePort orderBookService, CandlePublisher candlePublisher, ClockProvider clockProvider) {
+            OrderBookServicePort orderBookService, CandlePublisherPort candlePublisher, ClockProvider clockProvider) {
         this.orderBookService = orderBookService;
         this.candlePublisher = candlePublisher;
         this.clockProvider = clockProvider;
@@ -29,6 +31,12 @@ public class CandleService {
         var now = Instant.now(clockProvider.clock());
         // We need a candle per pair
         log.info("'{}' Dump candle start", now.getEpochSecond());
-        orderBookService.calculateCandle(now).forEach(candlePublisher::publish);
+        orderBookService.ticks(now).entrySet().stream()
+                .map(tickEntry -> calculateCandle(now.getEpochSecond(), tickEntry.getKey(), tickEntry.getValue()))
+                .forEach(candlePublisher::publish);
+    }
+
+    private OrderBookCandle calculateCandle(long epochSecond, String key, Tick value) {
+        return null;
     }
 }

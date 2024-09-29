@@ -45,6 +45,16 @@ public class OrderBook {
         return this;
     }
 
+    public Tick fetchTick(Instant instant) {
+        log.info("Fetching '{}' '{}' ticks", pair, instant);
+        return ticks.get(instant);
+    }
+
+    public Tick remove(Instant instant) {
+        log.info("Removing '{}' '{}' tick", pair, instant);
+        return ticks.remove(instant);
+    }
+
     private void updateTimeStamp(List<PriceLevel> nonNullAs, List<PriceLevel> nonNullBs) {
         var newLastUpdate = Stream.concat(nonNullAs.stream(), nonNullBs.stream())
                 .map(PriceLevel::timestamp)

@@ -2,16 +2,15 @@ package com.data.orderbook.domain;
 
 import com.data.orderbook.domain.model.ClockProvider;
 import com.data.orderbook.domain.model.OrderBook;
-import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.model.OrderBookSnapshot;
 import com.data.orderbook.domain.model.OrderBookUpdate;
+import com.data.orderbook.domain.model.Tick;
 import com.data.orderbook.domain.ports.in.OrderBookServicePort;
-
+import io.vavr.Tuple2;
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -48,15 +47,18 @@ public class OrderBookService implements OrderBookServicePort {
 
     @Override
     public void ingest(OrderBookSnapshot snapshot) {
+        // Pending
     }
 
     @Override
-    public Map<String, OrderBookCandle> calculateCandle(Instant time) {
-        return Map.of();
-    }
-
-    public List<OrderBookCandle> candles(Instant minute) {
-        // Span a thread to perform
-        return List.of();
+    public Map<String, Tick> ticks(Instant time) {
+        return books.entrySet().stream()
+                .map(booksEntry -> {
+                    var tick = new Tuple2<>(
+                            booksEntry.getKey(), booksEntry.getValue().fetchTick(time));
+                    booksEntry.getValue().remove(time);
+                    return tick;
+                })
+                .collect(Collectors.toMap(t -> t._1, t -> t._2));
     }
 }
