@@ -52,7 +52,7 @@ java -jar target/order-book-0.0.1-SNAPSHOT.jar
 To stop application push CTRL+C
 
 
-# Some notes and 
+# Some notes about implementation and current version
 
 As first candle tends to be incomplete (only a portion of the data gets collected), it is ignored (a convenient info message is added to the log).
 
