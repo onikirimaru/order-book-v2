@@ -17,6 +17,7 @@ public class TickFixture {
         var tick = new Tick(Instant.ofEpochSecond(1727348280L), null);
         PriceLevelFixture.createListOfTwo().forEach(tick::addAsk);
         PriceLevelFixture.createListOfTwo().forEach(tick::addBid);
+        tick.incrementTotalUpdates();
         return tick;
     }
 
@@ -25,6 +26,7 @@ public class TickFixture {
         var tick = new Tick(Instant.ofEpochSecond(1727348280L), previousTick);
         PriceLevelFixture.createListOfTwo().forEach(tick::addAsk);
         PriceLevelFixture.createListOfTwo().forEach(tick::addBid);
+        tick.incrementTotalUpdates();
         return tick;
     }
 
@@ -40,6 +42,7 @@ public class TickFixture {
         var firstTick = new FirstTick(Instant.ofEpochSecond(bucketEpochSecond));
         PriceLevelFixture.createListOfTwo(bucketEpochSecond).forEach(firstTick::addAsk);
         PriceLevelFixture.createListOfTwo(bucketEpochSecond).forEach(firstTick::addBid);
+        firstTick.incrementTotalUpdates();
         return firstTick;
     }
 }

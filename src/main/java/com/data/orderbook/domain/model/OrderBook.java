@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -42,17 +43,33 @@ public class OrderBook {
         var nonNullBs = getPriceLevels(update.b());
         updateTimeStamp(nonNullAs, nonNullBs);
         updateBuckets(nonNullAs, nonNullBs);
+        // FIXME Current tick is selected based on update content
+        Optional.ofNullable(currentTick)
+                .ifPresentOrElse(
+                        Tick::incrementTotalUpdates,
+                        () -> log.warn("No current tick selected for update '{}'", update));
+        currentTick = ticks.get(calculateBucket(lastUpdate));
         return this;
     }
 
-    public Tick fetchTick(Instant instant) {
-        log.info("Fetching '{}' '{}' ticks", pair, instant);
-        return ticks.get(instant);
+    public Optional<Tick> fetchTick(Instant instant) {
+        final var tick = ticks.get(instant);
+        if (Objects.isNull(tick)) {
+            log.info("No tick available in '{}'", instant);
+            return Optional.empty();
+        }
+        log.info("Fetching '{}' '{}' tick with '{}' updates", pair, instant.getEpochSecond(), tick.totalUpdates());
+        return Optional.of(tick);
     }
 
     public Tick remove(Instant instant) {
-        log.info("Removing '{}' '{}' tick", pair, instant);
-        return ticks.remove(instant);
+        final var remove = ticks.remove(instant);
+        log.info(
+                "Removing '{}' '{}' tick with '{}' updates",
+                pair,
+                instant.getEpochSecond(),
+                currentTick.totalUpdates());
+        return remove;
     }
 
     private void updateTimeStamp(List<PriceLevel> nonNullAs, List<PriceLevel> nonNullBs) {

@@ -1,5 +1,6 @@
 package com.data.orderbook.infrastructure.kraken;
 
+import com.data.orderbook.domain.model.OrderBookUpdate;
 import com.data.orderbook.domain.ports.in.OrderBookServicePort;
 import com.data.orderbook.infrastructure.kraken.domain.MessageMapper;
 import com.data.orderbook.infrastructure.kraken.domain.StartEvent;
@@ -12,6 +13,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -56,17 +58,35 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        log.error("Transport error", exception);
+        super.handleTransportError(session, exception);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        super.afterConnectionClosed(session, status);
+        System.exit(status.getCode());
+    }
+
     private void handleUpdateMessage(WebSocketSession session, TextMessage message) {
-        log.debug("Update received: '{}'", message.getPayload());
         if (message.getPayload().equals(EVENT_HEARTBEAT)) {
             // Heart beat received
             log.debug("Heartbeat received");
             return;
         }
-        orderBookService.ingest(updateMessageMapper.map(message));
+        log.debug("Update received: '{}'", message.getPayload());
+        OrderBookUpdate mapped = updateMessageMapper.map(message);
+        orderBookService.ingest(mapped);
     }
 
     private void handlingSnapshot(WebSocketSession session, TextMessage message) {
+        if (message.getPayload().equals(EVENT_HEARTBEAT)) {
+            // Heart beat received
+            log.debug("Heartbeat received");
+            return;
+        }
         log.info("Snapshot received: '{}'", message.getPayload());
         final var map = snapshotMessageMapper.map(message);
         orderBookService.ingest(map);
@@ -74,6 +94,11 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleSubscriptionPending(WebSocketSession session, TextMessage message) {
+        if (message.getPayload().contains("errorMessage")) {
+            log.error("Error handling subscription '{}'", message.getPayload());
+            // FIXME need to handle existing application in proper handler
+            System.exit(-1);
+        }
         log.info("Subscribed to '{}'", message.getPayload());
         status = Status.SUBSCRIBED;
     }

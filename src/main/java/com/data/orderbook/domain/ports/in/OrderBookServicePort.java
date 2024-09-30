@@ -6,6 +6,7 @@ import com.data.orderbook.domain.model.OrderBookUpdate;
 import com.data.orderbook.domain.model.Tick;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 public interface OrderBookServicePort {
 
@@ -15,5 +16,5 @@ public interface OrderBookServicePort {
 
     void ingest(OrderBookSnapshot snapshot);
 
-    Map<String, Tick> ticks(Instant time);
+    Map<String, Optional<Tick>> ticks(Instant time);
 }

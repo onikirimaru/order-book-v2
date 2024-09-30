@@ -14,8 +14,14 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class Tick {
     private final Instant bucket;
+
+    @Getter
     private final List<PriceLevel> as = new LinkedList<>();
+
+    @Getter
     private final List<PriceLevel> bs = new LinkedList<>();
+
+    private Integer numberOfUpdates = 0;
 
     @Getter
     private final PriceLevel startingA;
@@ -36,6 +42,7 @@ public class Tick {
     }
 
     public Tick addAsk(PriceLevel a) {
+        //
         this.as.add(a);
         this.lastA = a;
         return this;
@@ -45,5 +52,14 @@ public class Tick {
         this.bs.add(b);
         this.lastB = b;
         return this;
+    }
+
+    public Integer incrementTotalUpdates() {
+        numberOfUpdates++;
+        return numberOfUpdates;
+    }
+
+    public Integer totalUpdates() {
+        return numberOfUpdates;
     }
 }

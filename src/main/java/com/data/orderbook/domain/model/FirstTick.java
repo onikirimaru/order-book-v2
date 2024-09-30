@@ -2,7 +2,11 @@ package com.data.orderbook.domain.model;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class FirstTick extends Tick {
 
     public static final PriceLevel STARTING_PRICELEVEL = new PriceLevel(BigDecimal.ZERO, BigDecimal.ZERO, Instant.MIN);

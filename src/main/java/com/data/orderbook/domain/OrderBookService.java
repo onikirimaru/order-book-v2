@@ -9,6 +9,7 @@ import com.data.orderbook.domain.ports.in.OrderBookServicePort;
 import io.vavr.Tuple2;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +52,13 @@ public class OrderBookService implements OrderBookServicePort {
     }
 
     @Override
-    public Map<String, Tick> ticks(Instant time) {
+    public Map<String, Optional<Tick>> ticks(Instant time) {
         return books.entrySet().stream()
                 .map(booksEntry -> {
-                    var tick = new Tuple2<>(
-                            booksEntry.getKey(), booksEntry.getValue().fetchTick(time));
-                    booksEntry.getValue().remove(time);
-                    return tick;
+                    Optional<Tick> tick = booksEntry.getValue().fetchTick(time);
+                    var tickTuple = new Tuple2<>(booksEntry.getKey(), tick);
+                    tick.ifPresent(t -> booksEntry.getValue().remove(time));
+                    return tickTuple;
                 })
                 .collect(Collectors.toMap(t -> t._1, t -> t._2));
     }
