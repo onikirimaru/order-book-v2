@@ -7,7 +7,6 @@ import com.data.orderbook.infrastructure.kraken.domain.StartEvent;
 import com.data.orderbook.infrastructure.kraken.domain.SubscriptionEvent;
 import com.data.orderbook.infrastructure.kraken.domain.mapper.SnapshotMessageMapper;
 import com.data.orderbook.infrastructure.kraken.domain.mapper.UpdateMessageMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Try;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +32,6 @@ public class KrakenWebSocketHandler extends TextWebSocketHandler {
 
     public KrakenWebSocketHandler(
             @Value("#{'${order-book.pairs}'.split(',')}") List<String> pairs,
-            ObjectMapper objectMapper,
             SnapshotMessageMapper snapshotMessageMapper,
             MessageMapper messageMapper,
             UpdateMessageMapper updateMessageMapper,

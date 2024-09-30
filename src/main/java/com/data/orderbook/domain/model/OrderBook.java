@@ -64,11 +64,7 @@ public class OrderBook {
 
     public Tick remove(Instant instant) {
         final var remove = ticks.remove(instant);
-        log.info(
-                "Removing '{}' '{}' tick with '{}' updates",
-                pair,
-                instant.getEpochSecond(),
-                currentTick.totalUpdates());
+        log.info("Removing '{}' '{}' tick with '{}' updates", pair, instant.getEpochSecond(), remove.totalUpdates());
         return remove;
     }
 

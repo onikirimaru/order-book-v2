@@ -50,11 +50,8 @@ public class CandleService {
                         .getValue()
                         .map(t -> calculateCandle(candleInstant, tickEntry.getKey(), t))
                         .orElseGet(() -> handleEmptyCandle(tickEntry.getKey(), candleInstant)))
-                .forEach(c -> {
-                    Try.run(() -> candlePublisher.publish(c)).orElseRun(e -> {
-                        log.error("Error publishing candle '{}'", candleInstant, e);
-                    });
-                });
+                .forEach(c -> Try.run(() -> candlePublisher.publish(c))
+                        .orElseRun(e -> log.error("Error publishing candle '{}'", candleInstant, e)));
     }
 
     private Stream<OrderBookCandle> handleEmptyCandle(String key, Instant instant) {
