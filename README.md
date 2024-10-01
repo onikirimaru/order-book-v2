@@ -54,6 +54,8 @@ To stop application push CTRL+C
 
 # Some notes about implementation and current version
 
+Implementation is not yet completed as the Order Book levels are not correctly updated!!!!!!  
+
 As first candle tends to be incomplete (only a portion of the data gets collected), it is ignored (a convenient info message is added to the log).
 
 There are some bugs and scenarios pending to be fixed, and they will be during next days and versions (for instance, to save memory we are removing ticks related to already dumped candles, as soon as they are generated, but this may cause an issue if ticks are removed before next candle gets generated.
