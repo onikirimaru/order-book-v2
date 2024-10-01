@@ -12,6 +12,7 @@ import io.vavr.control.Try;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,22 +28,27 @@ public class CandleService {
     private final CandlePublisherPort candlePublisher;
     private final ClockProvider clockProvider;
     private final RoundingMode roundingMode;
+    private final CandleInstantFixer candleInstantFixer;
+    private final CandleInstantFixer instantFixer;
 
     public CandleService(
             @Value("${order-book.candle.rounding-mode}") RoundingMode roundingMode,
             OrderBookServicePort orderBookService,
             CandlePublisherPort candlePublisher,
-            ClockProvider clockProvider) {
+            ClockProvider clockProvider,
+            CandleInstantFixer candleInstantFixer) {
         this.orderBookService = orderBookService;
         this.candlePublisher = candlePublisher;
         this.clockProvider = clockProvider;
+        this.instantFixer = candleInstantFixer;
         this.roundingMode = roundingMode;
+        this.candleInstantFixer = candleInstantFixer;
     }
 
     @Scheduled(cron = "0 * * * * *")
     public void dump() throws JsonProcessingException {
-        var candleInstant =
-                Instant.ofEpochSecond(Instant.now(clockProvider.clock()).getEpochSecond());
+        var candleInstant = instantFixer.fix(Instant.now(clockProvider.clock()));
+        // Fixing candle instant
         // We need a candle per pair
         log.info("'{}' Candle dump started", candleInstant.getEpochSecond());
         orderBookService.ticks(candleInstant).entrySet().stream()
@@ -84,7 +90,6 @@ public class CandleService {
                 .orElse(BigDecimal.ZERO);
         var high = midPrice(highestA, lowestB);
         var low = midPrice(lowestA, highestB);
-
         // Sanity check
         if (highestB.compareTo(lowestA) >= 0) {
             log.warn(
@@ -94,8 +99,15 @@ public class CandleService {
                     highestA,
                     lowestA);
         }
-        return Stream.of(
-                new OrderBookCandle(pair, tickInstant.getEpochSecond(), open, high, low, close, tick.totalUpdates()));
+        return Stream.of(new OrderBookCandle(
+                UUID.randomUUID().toString(),
+                pair,
+                tickInstant.getEpochSecond(),
+                open,
+                high,
+                low,
+                close,
+                tick.totalUpdates()));
     }
 
     private BigDecimal midPrice(BigDecimal a, BigDecimal b) {

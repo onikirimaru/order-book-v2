@@ -4,8 +4,30 @@ order-book:
   candle:
     output: "console"
     rounding-mode: "CEILING"
+  kafka:
+    topic-prefix: local
+    consumers:
+      group-id: analytics.group
+      client-id-prefix: analytics
+      candle:
+        topic: "${order-book.kafka.topic-prefix}-candleEvents"
+    producers:
+      candle:
+        topic: "${order-book.kafka.topic-prefix}-candleEvents"
+
 
 spring:
   main:
     web-application-type: none
     lazy-initialization: false
+  kafka:
+    properties:
+      request.timeout.ms: 20000
+      retry.backoff.ms: 500
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      ack-mode: record
+

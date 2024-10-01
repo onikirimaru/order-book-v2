@@ -2,8 +2,8 @@ package com.data.orderbook.infrastructure.adapter;
 
 import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.ports.out.CandlePublisherPort;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.control.Try;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +18,13 @@ public class ConsoleCandlePublisher implements CandlePublisherPort {
     }
 
     @Override
-    public void publish(OrderBookCandle candle) throws JsonProcessingException {
+    public void publish(OrderBookCandle candle) {
+        var candleAsJson = Try.of(() -> objectMapper.writeValueAsString(candle)).get();
         System.out.println(
                 "_______________________________________________________________________________________________");
         System.out.println("Instant:" + candle.timestamp());
         System.out.println("Pair:" + candle.pair());
-        System.out.println(objectMapper.writeValueAsString(candle));
+        System.out.println(candleAsJson);
         System.out.println(
                 "_______________________________________________________________________________________________");
     }

@@ -15,7 +15,7 @@ This project requires:
 
 To build docker run next command in a shell window:
 ```
-./mvnw jib:dockerBuild
+./mvnw clean package jib:dockerBuild
 ```
 
 Once this finishes, docker image will be stored in local docker repository

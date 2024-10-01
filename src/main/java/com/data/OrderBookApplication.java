@@ -1,4 +1,4 @@
-package com.data.orderbook;
+package com.data;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
