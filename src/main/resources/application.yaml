@@ -30,8 +30,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
-        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.B
-        spring.json.use.type.headers: false
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
       isolation-level: read_committed
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

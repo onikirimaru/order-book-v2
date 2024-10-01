@@ -18,6 +18,6 @@ public class KafkaCandleConsumer {
             topics = "${order-book.kafka.consumers.candle.topic}",
             clientIdPrefix = "${order-book.kafka.consumers.client-id-prefix}")
     void update(final CandleEvent event) {
-        log.info("STARTING KAFKA CONSUMER");
+        log.info("Consuming event: '{}'", event);
     }
 }
