@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -21,18 +22,20 @@ public class OrderBookService implements OrderBookServicePort {
 
     private final ClockProvider clockProvider;
     private Instant instant;
+    private final Integer depth;
 
     private final Map<String, OrderBook> books;
 
-    public OrderBookService(ClockProvider clockProvider) {
+    public OrderBookService(@Value("${order-book.depth}") Integer depth, ClockProvider clockProvider) {
         this.books = new ConcurrentHashMap<>();
         this.clockProvider = clockProvider;
+        this.depth = depth;
     }
 
     @Override
     public void createBook(String pair) {
         this.instant = Instant.now(clockProvider.clock());
-        books.putIfAbsent(pair, new OrderBook(pair, clockProvider));
+        books.putIfAbsent(pair, new OrderBook(depth, pair, clockProvider));
     }
 
     @Override
@@ -41,7 +44,7 @@ public class OrderBookService implements OrderBookServicePort {
         var pair = update.pair();
         books.computeIfAbsent(pair, p -> {
             log.warn("Pair '{}' not configured, creating new Order Book", p);
-            return new OrderBook(p, clockProvider);
+            return new OrderBook(depth, p, clockProvider);
         });
         return books.computeIfPresent(pair, (k, v) -> v.ingest(update));
     }

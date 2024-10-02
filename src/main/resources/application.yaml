@@ -1,6 +1,7 @@
 order-book:
   wssURI: "wss://ws.kraken.com/"
   pairs: "XBT/USD"
+  depth: 10
   candle:
     output: "console"
     rounding-mode: "CEILING"

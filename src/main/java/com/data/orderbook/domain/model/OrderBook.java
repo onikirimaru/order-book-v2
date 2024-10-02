@@ -1,6 +1,7 @@
 package com.data.orderbook.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -23,14 +25,18 @@ public class OrderBook {
     public static final long SECONDS = TimeUnit.MINUTES.toSeconds(1);
     private final Instant instant;
     private final String pair;
+    private final Integer depth;
     private final ConcurrentHashMap<Instant, Tick> ticks = new ConcurrentHashMap<>();
+    private final List<PriceLevel> asks = List.of();
+    private final List<PriceLevel> bids = List.of();
     private final ClockProvider clockProvider;
     private Instant lastUpdate = Instant.MIN;
     private Tick currentTick;
 
-    public OrderBook(String pair, ClockProvider clockProvider) {
+    public OrderBook(Integer depth, String pair, ClockProvider clockProvider) {
         this.clockProvider = clockProvider;
         this.pair = pair;
+        this.depth = depth;
         this.instant = Instant.now(clockProvider.clock());
         var firstBucket = calculateBucket(instant);
         this.currentTick = new FirstTick(firstBucket);
@@ -68,9 +74,9 @@ public class OrderBook {
         return remove;
     }
 
-    private void updateTimeStamp(List<PriceLevel> nonNullAs, List<PriceLevel> nonNullBs) {
+    private void updateTimeStamp(List<PriceLevelUpdate> nonNullAs, List<PriceLevelUpdate> nonNullBs) {
         var newLastUpdate = Stream.concat(nonNullAs.stream(), nonNullBs.stream())
-                .map(PriceLevel::timestamp)
+                .map(PriceLevelUpdate::timestamp)
                 .max(Comparator.comparing(Instant::toEpochMilli));
         // Book last update should always bigger than previous
         newLastUpdate.ifPresent(nlu -> {
@@ -81,7 +87,7 @@ public class OrderBook {
         lastUpdate = newLastUpdate.orElse(lastUpdate);
     }
 
-    private void updateBuckets(List<PriceLevel> nonNullAs, List<PriceLevel> nonNullBs) {
+    private void updateBuckets(List<PriceLevelUpdate> nonNullAs, List<PriceLevelUpdate> nonNullBs) {
         nonNullAs.forEach(ask -> {
             // Calculate bucket
             final var bucket = calculateBucket(ask.timestamp());
@@ -94,7 +100,7 @@ public class OrderBook {
         });
     }
 
-    private static List<PriceLevel> getPriceLevels(List<PriceLevel> maybePriceLevel) {
+    private static List<PriceLevelUpdate> getPriceLevels(List<PriceLevelUpdate> maybePriceLevel) {
         return Optional.ofNullable(maybePriceLevel).orElse(List.of());
     }
 
@@ -104,12 +110,12 @@ public class OrderBook {
         return Instant.ofEpochSecond(((timestamp.getEpochSecond() / SECONDS) + 1) * SECONDS);
     }
 
-    private void addA(Instant bucket, PriceLevel priceLevel) {
+    private void addA(Instant bucket, PriceLevelUpdate priceLevel) {
         ticks.computeIfAbsent(bucket, b -> new Tick(b, currentTick));
         ticks.computeIfPresent(bucket, (b, tick) -> tick.addAsk(priceLevel));
     }
 
-    private void addB(Instant bucket, PriceLevel priceLevel) {
+    private void addB(Instant bucket, PriceLevelUpdate priceLevel) {
         ticks.computeIfAbsent(bucket, b -> new Tick(b, currentTick));
         ticks.computeIfPresent(bucket, (b, tick) -> tick.addBid(priceLevel));
     }

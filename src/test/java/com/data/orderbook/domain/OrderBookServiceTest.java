@@ -6,14 +6,16 @@ import com.data.orderbook.domain.fixtures.OrderBookUpdateFixture;
 import com.data.orderbook.domain.fixtures.TickFixture;
 import com.data.orderbook.domain.model.ClockProviderMock;
 import com.data.orderbook.domain.model.FirstTick;
+
 import java.time.Instant;
 import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 class OrderBookServiceTest {
 
     public static final Instant CANDLE_INSTANT = Instant.ofEpochSecond(1727348270L);
-    OrderBookService orderBookService = new OrderBookService(new ClockProviderMock(CANDLE_INSTANT));
+    OrderBookService orderBookService = new OrderBookService(10, new ClockProviderMock(CANDLE_INSTANT));
 
     @Test
     void shouldIngestWhenBookDoesNotExist() {

@@ -4,6 +4,7 @@ import com.data.orderbook.domain.model.ClockProvider;
 import com.data.orderbook.domain.model.FirstTick;
 import com.data.orderbook.domain.model.OrderBookCandle;
 import com.data.orderbook.domain.model.PriceLevel;
+import com.data.orderbook.domain.model.PriceLevelUpdate;
 import com.data.orderbook.domain.model.Tick;
 import com.data.orderbook.domain.ports.in.OrderBookServicePort;
 import com.data.orderbook.domain.ports.out.CandlePublisherPort;
@@ -73,19 +74,19 @@ public class CandleService {
         var open = midPrice(tick.startingA().price(), tick.startingB().price());
         var close = midPrice(tick.lastA().price(), tick.lastB().price());
         var highestA = tick.as().stream()
-                .map(PriceLevel::price)
+                .map(PriceLevelUpdate::price)
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
         var lowestA = tick.as().stream()
-                .map(PriceLevel::price)
+                .map(PriceLevelUpdate::price)
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
         var highestB = tick.bs().stream()
-                .map(PriceLevel::price)
+                .map(PriceLevelUpdate::price)
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
         var lowestB = tick.bs().stream()
-                .map(PriceLevel::price)
+                .map(PriceLevelUpdate::price)
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
         var high = midPrice(highestA, lowestB);

@@ -1,6 +1,8 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
 import com.data.orderbook.domain.model.PriceLevel;
+import com.data.orderbook.domain.model.PriceLevelUpdate;
+import com.data.orderbook.domain.model.UpdateType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Try;
@@ -33,20 +35,26 @@ public class MessageMapper {
         return Try.of(() -> objectMapper.writeValueAsBytes(object));
     }
 
-    public List<PriceLevel> map(List<List<String>> prices) {
+    public List<PriceLevelUpdate> map(List<List<String>> prices) {
         // FIXME Handl republish events
         return prices.stream()
                 .map(ple -> {
-                    var split = ple.get(2).split("\\.");
-                    return new PriceLevel(
+                    var epochSplit = ple.get(2).split("\\.");
+                    UpdateType updateType = null;
+                    if (ple.size() == 4) {
+                        updateType = UpdateType.REPUBLISH;
+                    }
+                    return new PriceLevelUpdate(
                             new BigDecimal(ple.getFirst()),
                             new BigDecimal(ple.get(1)),
-                            Instant.ofEpochSecond(Long.parseLong(split[0]), Long.parseLong(split[1]) * MICRO_TO_NANO));
+                            Instant.ofEpochSecond(Long.parseLong(epochSplit[0]), Long.parseLong(epochSplit[1]) * MICRO_TO_NANO),
+                            updateType
+                            );
                 })
                 .toList();
     }
 
-    public List<PriceLevel> mapNullable(List<List<String>> prices) {
+    public List<PriceLevelUpdate> mapNullable(List<List<String>> prices) {
         return Optional.ofNullable(prices).map(this::map).orElse(List.of());
     }
 }

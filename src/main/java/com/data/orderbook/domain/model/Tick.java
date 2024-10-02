@@ -16,24 +16,24 @@ public class Tick {
     private final Instant bucket;
 
     @Getter
-    private final List<PriceLevel> as = new LinkedList<>();
+    private final List<PriceLevelUpdate> as = new LinkedList<>();
 
     @Getter
-    private final List<PriceLevel> bs = new LinkedList<>();
+    private final List<PriceLevelUpdate> bs = new LinkedList<>();
 
     private Integer numberOfUpdates = 0;
 
     @Getter
-    private final PriceLevel startingA;
+    private final PriceLevelUpdate startingA;
 
     @Getter
-    private final PriceLevel startingB;
+    private final PriceLevelUpdate startingB;
 
     @Getter
-    private PriceLevel lastA;
+    private PriceLevelUpdate lastA;
 
     @Getter
-    private PriceLevel lastB;
+    private PriceLevelUpdate lastB;
 
     public Tick(Instant bucket, Tick previousTick) {
         this.bucket = bucket;
@@ -41,14 +41,14 @@ public class Tick {
         this.startingB = Optional.ofNullable(previousTick).map(p -> p.lastB).orElse(null);
     }
 
-    public Tick addAsk(PriceLevel a) {
+    public Tick addAsk(PriceLevelUpdate a) {
         //
         this.as.add(a);
         this.lastA = a;
         return this;
     }
 
-    public Tick addBid(PriceLevel b) {
+    public Tick addBid(PriceLevelUpdate b) {
         this.bs.add(b);
         this.lastB = b;
         return this;
