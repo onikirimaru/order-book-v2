@@ -57,7 +57,6 @@ public class OrderBook {
         lastUpdate = Instant.now(clockProvider.clock());
         refreshCandle();
         this.totalUpdates.addAndGet(1);
-        System.out.print(totalUpdates);
         return this;
     }
 
