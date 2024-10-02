@@ -1,21 +1,20 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.data.orderbook.domain.model.PriceLevelUpdate;
 import com.data.orderbook.domain.model.UpdateType;
 import com.data.orderbook.infrastructure.kraken.domain.mapper.UpdateMessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.socket.TextMessage;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class UpdateMessageMapperTest {
 

@@ -3,6 +3,8 @@ order-book:
   pairs: "XBT/USD"
   depth: 10
   candle:
+    delay-millis: 60000
+    rate-millis: 60000
     output: "console"
     rounding-mode: "CEILING"
   kafka:

@@ -1,16 +1,14 @@
 package com.data.orderbook.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -22,101 +20,103 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class OrderBook {
 
-    public static final long SECONDS = TimeUnit.MINUTES.toSeconds(1);
+    private static final long SECONDS = TimeUnit.MINUTES.toSeconds(1);
+    private static final BigDecimal LOWEST_ASK_BY_DEFAULT = new BigDecimal("10000000000");
     private final Instant instant;
     private final String pair;
     private final Integer depth;
-    private final ConcurrentHashMap<Instant, Tick> ticks = new ConcurrentHashMap<>();
-    private final List<PriceLevel> asks = List.of();
-    private final List<PriceLevel> bids = List.of();
     private final ClockProvider clockProvider;
+    private final RoundingMode roundingMode;
+    private final List<PriceLevel> asks = new LinkedList<>();
+    private final List<PriceLevel> bids = new LinkedList<>();
+    private BigDecimal open;
+    private BigDecimal last;
+    private BigDecimal high;
+    private BigDecimal low;
     private Instant lastUpdate = Instant.MIN;
-    private Tick currentTick;
+    private final AtomicInteger totalUpdates;
 
-    public OrderBook(Integer depth, String pair, ClockProvider clockProvider) {
+    public OrderBook(Integer depth, String pair, ClockProvider clockProvider, RoundingMode roundingMode) {
         this.clockProvider = clockProvider;
         this.pair = pair;
         this.depth = depth;
+        this.roundingMode = roundingMode;
         this.instant = Instant.now(clockProvider.clock());
-        var firstBucket = calculateBucket(instant);
-        this.currentTick = new FirstTick(firstBucket);
-        this.ticks.put(firstBucket, currentTick);
+        this.totalUpdates = new AtomicInteger(0);
     }
 
-    public OrderBook ingest(OrderBookUpdate update) {
-        // FIXME This needs to be fixed to microseconds and we must check every update
-        var nonNullAs = getPriceLevels(update.a());
-        var nonNullBs = getPriceLevels(update.b());
-        updateTimeStamp(nonNullAs, nonNullBs);
-        updateBuckets(nonNullAs, nonNullBs);
-        // FIXME Current tick is selected based on update content
-        Optional.ofNullable(currentTick)
-                .ifPresentOrElse(
-                        Tick::incrementTotalUpdates,
-                        () -> log.warn("No current tick selected for update '{}'", update));
-        currentTick = ticks.get(calculateBucket(lastUpdate));
+    public OrderBook ingest(OrderBookSnapshot snapshot) {
+        refreshAll(this.asks, snapshot.as());
+        refreshAll(this.bids, snapshot.bs());
+        lastUpdate = Instant.now(clockProvider.clock());
+        refreshCandle();
         return this;
     }
 
-    public Optional<Tick> fetchTick(Instant instant) {
-        final var tick = ticks.get(instant);
-        if (Objects.isNull(tick)) {
-            log.info("No tick available in '{}'", instant);
-            return Optional.empty();
+    public OrderBook ingest(OrderBookUpdate update) {
+        lastUpdate = Instant.now(clockProvider.clock());
+        refreshCandle();
+        this.totalUpdates.addAndGet(1);
+        System.out.print(totalUpdates);
+        return this;
+    }
+
+    private void refreshCandle() {
+        var mp = midPrice();
+        if (totalUpdates.get() == 0) {
+            open = mp;
+            high = mp;
+            low = mp;
+            last = mp;
+            return;
         }
-        log.info("Fetching '{}' '{}' tick with '{}' updates", pair, instant.getEpochSecond(), tick.totalUpdates());
-        return Optional.of(tick);
+        high = mp.compareTo(high) > 0 ? midPrice() : high;
+        low = mp.compareTo(last) < 0 ? midPrice() : last;
+        last = mp;
     }
 
-    public Tick remove(Instant instant) {
-        final var remove = ticks.remove(instant);
-        log.info("Removing '{}' '{}' tick with '{}' updates", pair, instant.getEpochSecond(), remove.totalUpdates());
-        return remove;
+    public Candle fetchCandle(Instant instant) {
+        log.info("Fetching '{}' '{}' tick with '{}' updates", pair, instant.getEpochSecond(), totalUpdates.get());
+        final var candle = new Candle(
+                UUID.randomUUID().toString(),
+                pair,
+                instant.getEpochSecond(),
+                open,
+                high,
+                low,
+                last,
+                totalUpdates.get());
+        reset();
+        return candle;
     }
 
-    private void updateTimeStamp(List<PriceLevelUpdate> nonNullAs, List<PriceLevelUpdate> nonNullBs) {
-        var newLastUpdate = Stream.concat(nonNullAs.stream(), nonNullBs.stream())
-                .map(PriceLevelUpdate::timestamp)
-                .max(Comparator.comparing(Instant::toEpochMilli));
-        // Book last update should always bigger than previous
-        newLastUpdate.ifPresent(nlu -> {
-            if (nlu.isBefore(lastUpdate)) {
-                log.warn("Update contains data in the past: '{}' vs '{}'", nlu, lastUpdate);
-            }
-        });
-        lastUpdate = newLastUpdate.orElse(lastUpdate);
+    private void reset() {
+        totalUpdates.set(0);
+        open = null;
+        last = null;
+        high = null;
+        low = null;
     }
 
-    private void updateBuckets(List<PriceLevelUpdate> nonNullAs, List<PriceLevelUpdate> nonNullBs) {
-        nonNullAs.forEach(ask -> {
-            // Calculate bucket
-            final var bucket = calculateBucket(ask.timestamp());
-            addA(bucket, ask);
-        });
-        nonNullBs.forEach(ask -> {
-            // Calculate bucket
-            final var bucket = calculateBucket(ask.timestamp());
-            addB(bucket, ask);
-        });
+    private void refreshAll(List<PriceLevel> priceLevels, List<PriceLevelUpdate> snapshotUpdates) {
+        var snapshotLevels = snapshotUpdates.stream()
+                .map(plu -> new PriceLevel(plu.price(), plu.volume(), plu.timestamp()))
+                .toList();
+        priceLevels.clear();
+        priceLevels.addAll(snapshotLevels);
     }
 
-    private static List<PriceLevelUpdate> getPriceLevels(List<PriceLevelUpdate> maybePriceLevel) {
-        return Optional.ofNullable(maybePriceLevel).orElse(List.of());
+    private BigDecimal midPrice() {
+        var hb = highestBid();
+        var la = lowestAsk();
+        return hb.add(la).divide(BigDecimal.TWO, roundingMode);
     }
 
-    private Instant calculateBucket(Instant timestamp) {
-        // Bucket is the one that ends in the next minute (need to round epoch seconds to minutes to calculate bucket
-        // instant)
-        return Instant.ofEpochSecond(((timestamp.getEpochSecond() / SECONDS) + 1) * SECONDS);
+    private BigDecimal lowestAsk() {
+        return asks.stream().map(PriceLevel::price).min(BigDecimal::compareTo).orElse(LOWEST_ASK_BY_DEFAULT);
     }
 
-    private void addA(Instant bucket, PriceLevelUpdate priceLevel) {
-        ticks.computeIfAbsent(bucket, b -> new Tick(b, currentTick));
-        ticks.computeIfPresent(bucket, (b, tick) -> tick.addAsk(priceLevel));
-    }
-
-    private void addB(Instant bucket, PriceLevelUpdate priceLevel) {
-        ticks.computeIfAbsent(bucket, b -> new Tick(b, currentTick));
-        ticks.computeIfPresent(bucket, (b, tick) -> tick.addBid(priceLevel));
+    private BigDecimal highestBid() {
+        return bids.stream().map(PriceLevel::price).max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
     }
 }

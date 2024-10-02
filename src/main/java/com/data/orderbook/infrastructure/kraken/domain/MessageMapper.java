@@ -1,6 +1,5 @@
 package com.data.orderbook.infrastructure.kraken.domain;
 
-import com.data.orderbook.domain.model.PriceLevel;
 import com.data.orderbook.domain.model.PriceLevelUpdate;
 import com.data.orderbook.domain.model.UpdateType;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,9 +46,9 @@ public class MessageMapper {
                     return new PriceLevelUpdate(
                             new BigDecimal(ple.getFirst()),
                             new BigDecimal(ple.get(1)),
-                            Instant.ofEpochSecond(Long.parseLong(epochSplit[0]), Long.parseLong(epochSplit[1]) * MICRO_TO_NANO),
-                            updateType
-                            );
+                            Instant.ofEpochSecond(
+                                    Long.parseLong(epochSplit[0]), Long.parseLong(epochSplit[1]) * MICRO_TO_NANO),
+                            updateType);
                 })
                 .toList();
     }

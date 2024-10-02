@@ -1,6 +1,6 @@
 package com.data.orderbook.infrastructure.adapter;
 
-import com.data.orderbook.domain.model.OrderBookCandle;
+import com.data.orderbook.domain.model.Candle;
 import com.data.orderbook.domain.ports.out.CandlePublisherPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Try;
@@ -18,7 +18,7 @@ public class ConsoleCandlePublisher implements CandlePublisherPort {
     }
 
     @Override
-    public void publish(OrderBookCandle candle) {
+    public void publish(Candle candle) {
         var candleAsJson = Try.of(() -> objectMapper.writeValueAsString(candle)).get();
         System.out.println(
                 "_______________________________________________________________________________________________");

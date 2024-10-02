@@ -1,12 +1,11 @@
 package com.data.orderbook.domain.ports.in;
 
+import com.data.orderbook.domain.model.Candle;
 import com.data.orderbook.domain.model.OrderBook;
 import com.data.orderbook.domain.model.OrderBookSnapshot;
 import com.data.orderbook.domain.model.OrderBookUpdate;
-import com.data.orderbook.domain.model.Tick;
 import java.time.Instant;
 import java.util.Map;
-import java.util.Optional;
 
 public interface OrderBookServicePort {
 
@@ -14,7 +13,7 @@ public interface OrderBookServicePort {
 
     OrderBook ingest(OrderBookUpdate update);
 
-    void ingest(OrderBookSnapshot snapshot);
+    OrderBook ingest(OrderBookSnapshot snapshot);
 
-    Map<String, Optional<Tick>> ticks(Instant time);
+    Map<String, Candle> getCandle(Instant time);
 }
