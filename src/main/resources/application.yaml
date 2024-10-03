@@ -1,7 +1,10 @@
 order-book:
   wssURI: "wss://ws.kraken.com/"
   pairs: "XBT/USD"
+  depth: 10
   candle:
+    delay-millis: 60000
+    rate-millis: 60000
     output: "console"
     rounding-mode: "CEILING"
   kafka:
@@ -15,7 +18,6 @@ order-book:
       candle:
         topic: "${order-book.kafka.topic-prefix}-candleEvents"
 
-
 spring:
   main:
     web-application-type: none
@@ -25,6 +27,14 @@ spring:
       request.timeout.ms: 20000
       retry.backoff.ms: 500
     bootstrap-servers: localhost:9094
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      isolation-level: read_committed
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

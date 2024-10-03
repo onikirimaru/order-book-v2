@@ -9,19 +9,20 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class FirstTick extends Tick {
 
-    public static final PriceLevel STARTING_PRICELEVEL = new PriceLevel(BigDecimal.ZERO, BigDecimal.ZERO, Instant.MIN);
+    public static final PriceLevelUpdate STARTING_PRICELEVEL =
+            new PriceLevelUpdate(BigDecimal.ZERO, BigDecimal.ZERO, Instant.MIN, null);
 
     public FirstTick(Instant bucket) {
         super(bucket, null);
     }
 
     @Override
-    public PriceLevel startingA() {
+    public PriceLevelUpdate startingA() {
         return STARTING_PRICELEVEL;
     }
 
     @Override
-    public PriceLevel startingB() {
+    public PriceLevelUpdate startingB() {
         return STARTING_PRICELEVEL;
     }
 }

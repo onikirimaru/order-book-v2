@@ -2,7 +2,8 @@ package com.data.orderbook.infrastructure.kraken.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.data.orderbook.domain.model.PriceLevel;
+import com.data.orderbook.domain.model.PriceLevelUpdate;
+import com.data.orderbook.domain.model.UpdateType;
 import com.data.orderbook.infrastructure.kraken.domain.mapper.UpdateMessageMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -26,16 +27,19 @@ class UpdateMessageMapperTest {
                         "[119930880,{\"b\":[[\"64347.60000\",\"0.00000000\",\"1727348278.841901\"],[\"64340.80000\",\"0.64859742\",\"1727348278.626592\",\"r\"]],\"c\":\"3020424060\"},\"book-10\",\"XBT/USD\"]"));
 
         assertThat(result).satisfies(r -> {
+            assertThat(r.checksum()).isEqualTo("3020424060");
             assertThat(r.b())
                     .isEqualTo(List.of(
-                            new PriceLevel(
+                            new PriceLevelUpdate(
                                     new BigDecimal("64347.60000"),
                                     new BigDecimal("0.00000000"),
-                                    Instant.ofEpochSecond(1727348278L, 841901000L)),
-                            new PriceLevel(
+                                    Instant.ofEpochSecond(1727348278L, 841901000L),
+                                    null),
+                            new PriceLevelUpdate(
                                     new BigDecimal("64340.80000"),
                                     new BigDecimal("0.64859742"),
-                                    Instant.ofEpochSecond(1727348278L, 626592000))));
+                                    Instant.ofEpochSecond(1727348278L, 626592000),
+                                    UpdateType.REPUBLISH)));
         });
     }
 
