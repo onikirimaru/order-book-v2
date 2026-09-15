@@ -34,6 +34,7 @@
 		<lombok.version>1.18.34</lombok.version>
 		<palantir-format.version>2.47.0</palantir-format.version>
 		<spotless-plugin.version>2.43.0</spotless-plugin.version>
+		<io-netty.netty-resolver-dns.version>4.1.135.Final</io-netty.netty-resolver-dns.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -164,5 +165,14 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-resolver-dns</artifactId>
+				<version>${io-netty.netty-resolver-dns.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 </project>
